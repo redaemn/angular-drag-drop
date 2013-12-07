@@ -1,4 +1,4 @@
-[![devDependency Status](https://david-dm.org/redaemn/angular-drag-drop.png?branch=master)](https://david-dm.org/redaemn/angular-drag-drop#info=devDependencies)
+[![devDependency Status](https://david-dm.org/redaemn/angular-drag-drop/dev-status.png)](https://david-dm.org/redaemn/angular-drag-drop#info=devDependencies)
 
 angular-drag-drop
 =================

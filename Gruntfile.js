@@ -58,7 +58,22 @@ module.exports = function(grunt) {
     },
     
     clean: {
-      dist: ['dist/*.js']
+      dist: ['dist/*.js'],
+      demoSite: ['dist/resources/', 'dist/index.html']
+    },
+    
+    copy: {
+      demoSite: {
+        options: {
+          processContent: grunt.template.process
+        },
+        files: [{
+          expand: true,
+          cwd: "misc/demoSite",
+          src: ["index.html", "resources/*"],
+          dest: "dist/"
+        }]
+      }
     }
     
   });
@@ -67,6 +82,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
   /****************************************
    * Default task
@@ -85,4 +101,9 @@ module.exports = function(grunt) {
     'Lint JS files and then minify',
     ['clean:dist', 'jshint:dist', 'uglify:dist']
    );
+   
+   grunt.registerTask('demoSite',
+    'Update the demo site',
+    ['clean:demoSite', 'copy:demoSite']
+  );
 };
