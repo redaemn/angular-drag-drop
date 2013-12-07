@@ -55,7 +55,7 @@ module.exports = function(config) {
     // - PhantomJS
     // - IE (only Windows)
     // CLI --browsers Chrome,Firefox,Safari
-    browsers: process.env.IP ? ['PhantomJS'] : [
+    browsers: process.env.IP ? [] : [
       'Chrome'
     ],
     
