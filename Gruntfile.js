@@ -7,16 +7,17 @@ module.exports = function(grunt) {
     
     commons: {
       banner: '/*\n' +
-              ' * <%= pkg.name %> v<%= pkg.version %> (https://github.com/redaemn/angular-drag-drop)\n' +
+              ' * <%= pkg.name %> v<%= pkg.version %> [https://github.com/redaemn/angular-drag-drop]\n' +
               ' * <%= grunt.template.today("yyyy-mm-dd") %>\n' +
-              ' * Author: <%= pkg.author %>\n' +
               ' *\n' +
               ' * This software is licensed under The MIT License (MIT)\n' +
-              ' * https://github.com/redaemn/angular-drag-drop/LICENSE\n' +
+              ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> [<%= pkg.author.url %>]\n' +
+              ' * [https://github.com/redaemn/angular-drag-drop/blob/master/LICENSE]\n' +
               ' */\n\n'
     },
     
     jshint: {
+      chore: ['package.json', 'Gruntfile.js', 'karma.conf.js'],
       dist: ['Gruntfile.js','src/**/*.js', 'test/**/*.js']
     },
     
@@ -90,7 +91,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default',
     'Lint JS files, run tests and then build',
-    ['jshint:dist', 'karma:singleRun', 'uglify:dist']
+    ['jshint:chore', 'jshint:dist', 'karma:singleRun', 'uglify:dist']
   );
   
   /****************************************
@@ -99,7 +100,7 @@ module.exports = function(grunt) {
    
    grunt.registerTask('build',
     'Lint JS files and then minify',
-    ['clean:dist', 'jshint:dist', 'uglify:dist']
+    ['clean:dist', 'jshint:chore', 'jshint:dist', 'uglify:dist']
    );
    
    grunt.registerTask('demoSite',

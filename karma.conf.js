@@ -79,5 +79,5 @@ module.exports = function(config) {
     //   'karma-commonjs'
     // ]
     
-  })
+  });
 };
