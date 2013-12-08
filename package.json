@@ -1,7 +1,10 @@
 {
-  "author": "https://plus.google.com/+GabrieleRabbiosi/",
   "name": "angular-drag-drop",
   "version": "0.0.1",
+  "author": {
+    "name": "Gabriele Rabbiosi"
+    "url": "https://plus.google.com/+GabrieleRabbiosi/"
+  },
   "devDependencies": {
     "grunt": "~0.4.0",
     "karma": "~0.10.0",
@@ -10,5 +13,13 @@
     "grunt-karma": "~0.6.0",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-copy": "~0.4.0"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/redaemn/angular-drag-drop.git"
+  },
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/redaemn/angular-drag-drop/blob/master/LICENSE"
   }
 }
