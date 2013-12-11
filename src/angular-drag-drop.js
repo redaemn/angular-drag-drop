@@ -68,7 +68,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       revert: '&'
     },
     link: function link ($scope, $element, $attrs) {
-      //debugger;
       var currentMouse,
         startingPosition,
         revert = angular.isDefined($attrs.revert);
@@ -83,7 +82,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       setupPosition();
       
       function setupPosition() {
-        //debugger;
         var position = $element.css('position');
         var top = $element.css('top');
         var left = $element.css('left');
@@ -125,7 +123,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       }
       
       function drag(e) {
-        //debugger;
         var elemTop = parseInt($element.css('top')),
           elemLeft = parseInt($element.css('left'));
         
@@ -143,7 +140,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       }
       
       function dragTeardown(e) {
-        //debugger;
         $document.unbind('mouseup', dragTeardown);
         $document.unbind('mousemove', drag);
         
@@ -200,7 +196,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       }
       
       function drag(pageX, pageY, draggable) {
-        //debugger;
         
         if (isOverMe(pageX, pageY) && !$scope.isDraggableOver) {
           console.log('draggableEnter: ' + pageX + " " + pageY + " " + draggable);

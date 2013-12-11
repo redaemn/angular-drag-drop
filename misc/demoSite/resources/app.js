@@ -21,15 +21,6 @@ function pageController($scope, dragdropService) {
     $scope.appointment1.id += 1;
   };
 
-  $scope.draggableEnter = function(draggable, droppable) {
-    //debugger;
-    add(draggable, droppable);
-  };
-
-  $scope.draggableLeave = function(draggable, droppable) {
-    remove(draggable, droppable);
-  };
-
   $scope.dragStart = function(draggable, droppable) {
     var idx;
 
@@ -45,7 +36,6 @@ function pageController($scope, dragdropService) {
   };
 
   $scope.revert = function() {
-    //debugger;
     var droppableHover = dragdropService.droppableHover();
     var dragging = dragdropService.dragging();
 
@@ -53,7 +43,6 @@ function pageController($scope, dragdropService) {
   };
 
   function add(draggable, droppable) {
-    //debugger;
     if (droppable.indexOf(draggable) < 0) {
       remove(draggable, previousDay);
       droppable.push(draggable);
