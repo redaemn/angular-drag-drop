@@ -16,6 +16,17 @@ module.exports = function(grunt) {
               ' */\n\n'
     },
     
+    concat: {
+      dist: {
+        options: {
+          banner: '<%= commons.banner %>'
+        },
+        files: {
+          'dist/<%= filename %>-<%= pkg.version %>.js': ['src/**/*.js']
+        }
+      }
+    },
+    
     jshint: {
       chore: ['package.json', 'Gruntfile.js', 'karma.conf.js'],
       dist: ['Gruntfile.js','src/**/*.js', 'test/**/*.js']
@@ -80,6 +91,7 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -91,7 +103,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default',
     'Lint JS files, run tests and then build',
-    ['jshint:chore', 'jshint:dist', 'karma:singleRun', 'uglify:dist']
+    ['clean:dist', 'jshint:chore', 'jshint:dist', 'karma:singleRun', 'concat:dist', 'uglify:dist']
   );
   
   /****************************************
@@ -100,7 +112,7 @@ module.exports = function(grunt) {
    
    grunt.registerTask('build',
     'Lint JS files and then minify',
-    ['clean:dist', 'jshint:chore', 'jshint:dist', 'uglify:dist']
+    ['clean:dist', 'jshint:chore', 'jshint:dist', 'concat:dist', 'uglify:dist']
    );
    
    grunt.registerTask('demoSite',
