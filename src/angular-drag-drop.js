@@ -1,3 +1,4 @@
+/* global angular */
 angular.module('angular-drag-drop', ['ui.bootstrap.position'])
 
 .factory('dragdropService', [function() {
@@ -69,8 +70,7 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
     },
     link: function link ($scope, $element, $attrs) {
       var currentMouse,
-        startingPosition,
-        revert = angular.isDefined($attrs.revert);
+        startingPosition;
       
       $element.bind('mousedown', dragSetup);
       
@@ -123,8 +123,8 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       }
       
       function drag(e) {
-        var elemTop = parseInt($element.css('top')),
-          elemLeft = parseInt($element.css('left'));
+        var elemTop = parseInt($element.css('top'), 10),
+          elemLeft = parseInt($element.css('left'), 10);
         
         $element.css({
           'top': (elemTop + (e.pageY - currentMouse.pageY)) + 'px',
