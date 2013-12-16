@@ -1,4 +1,12 @@
 /* global angular */
+
+/*
+ * TODO:
+ * - don't use $position anymore, use mouse events
+ * - improve draggable interface
+ * - improve demo
+ */
+
 angular.module('angular-drag-drop', ['ui.bootstrap.position'])
 
 .factory('dragdropService', [function() {
@@ -63,16 +71,20 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
   return {
     restrict: 'A',
     transclude: true,
-    template: '<div ng-transclude></div>',
+    template: '<span ng-transclude></span>',
+    replace: false,
     scope: {
       draggable: '=',
+      dragStart: '&',
+      drag: '&',
+      dragStop: '&',
       revert: '&'
     },
     link: function link ($scope, $element, $attrs) {
-      var currentMouse,
+      var lastPosition,
         startingPosition;
       
-      $element.bind('mousedown', dragSetup);
+      $element.bind('mousedown', dragStart);
       
       $element.css({
         cursor: 'move',
@@ -82,6 +94,7 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       setupPosition();
       
       function setupPosition() {
+        // TODO: use window.getComputedStyle($element[0]) to get stylesheet styles
         var position = $element.css('position');
         var top = $element.css('top');
         var left = $element.css('left');
@@ -99,7 +112,7 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
         }
       }
       
-      function dragSetup(e) {
+      function dragStart(e) {
         startingPosition = {
           pageX: e.pageX,
           pageY: e.pageY,
@@ -109,15 +122,21 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
         
         $element.css('z-index', 10001);
         
-        currentMouse = {
+        lastPosition = {
           pageX: e.pageX,
           pageY: e.pageY
         };
         
+        $scope.dragStart({
+          pageX: e.pageX,
+          pageY: e.pageY,
+          draggable: $scope.draggable
+        });
+        $scope.$apply();
         dragdropService.dragStart(e.pageX, e.pageY, $scope.draggable);
         
         $document.bind('mousemove', drag);
-        $document.bind('mouseup', dragTeardown);
+        $document.bind('mouseup', dragStop);
         
         e.preventDefault();
       }
@@ -127,20 +146,26 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
           elemLeft = parseInt($element.css('left'), 10);
         
         $element.css({
-          'top': (elemTop + (e.pageY - currentMouse.pageY)) + 'px',
-          'left': (elemLeft + (e.pageX - currentMouse.pageX)) + 'px'
+          'top': (elemTop + (e.pageY - lastPosition.pageY)) + 'px',
+          'left': (elemLeft + (e.pageX - lastPosition.pageX)) + 'px'
         });
         
-        currentMouse = {
+        lastPosition = {
           pageX: e.pageX,
           pageY: e.pageY
         };
         
+        $scope.drag({
+          pageX: e.pageX,
+          pageY: e.pageY,
+          draggable: $scope.draggable
+        });
+        $scope.$apply();
         dragdropService.drag(e.pageX, e.pageY, $scope.draggable);
       }
       
-      function dragTeardown(e) {
-        $document.unbind('mouseup', dragTeardown);
+      function dragStop(e) {
+        $document.unbind('mouseup', dragStop);
         $document.unbind('mousemove', drag);
         
         if ($scope.revert()) {
@@ -148,14 +173,21 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
             top: startingPosition.top,
             left: startingPosition.left
           });
+          // TODO: how to handle revert?
           dragdropService.drag(startingPosition.pageX, startingPosition.pageY, $scope.draggable);
           dragdropService.dragStop(startingPosition.pageX, startingPosition.pageY, $scope.draggable);
         }
         else {
+          $scope.dragStop({
+            pageX: e.pageX,
+            pageY: e.pageY,
+            draggable: $scope.draggable
+          });
+          $scope.$apply();
           dragdropService.dragStop(e.pageX, e.pageY, $scope.draggable);
         }
         
-        currentMouse = undefined;
+        lastPosition = undefined;
         $element.css('z-index', 10000);
       }
     }
@@ -182,7 +214,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       $scope.isDraggableOver = false;
       
       function dragStart(pageX, pageY, draggable) {
-        console.log('dragStart: ' + pageX + " " + pageY + " " + draggable);
         $scope.dragStart({
           pageX: pageX,
           pageY: pageY,
@@ -198,7 +229,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       function drag(pageX, pageY, draggable) {
         
         if (isOverMe(pageX, pageY) && !$scope.isDraggableOver) {
-          console.log('draggableEnter: ' + pageX + " " + pageY + " " + draggable);
           $scope.isDraggableOver = true;
           $scope.$apply();
           
@@ -210,7 +240,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
           });
         }
         else if (isOverMe(pageX, pageY) && $scope.isDraggableOver) {
-          console.log('draggableHover: ' + pageX + " " + pageY + " " + draggable);
           $scope.draggableHover({
             pageX: pageX,
             pageY: pageY,
@@ -219,7 +248,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
           });
         }
         else if (!isOverMe(pageX, pageY) && $scope.isDraggableOver) {
-          console.log('draggableLeave: ' + pageX + " " + pageY + " " + draggable);
           $scope.isDraggableOver = false;
           $scope.$apply();
           
@@ -239,7 +267,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       
       function dragStop(pageX, pageY, draggable) {
         if ($scope.isDraggableOver) {
-          console.log('draggableDrop: ' + pageX + " " + pageY + " " + draggable);
           $scope.isDraggableOver = false;
           $scope.draggableDrop({
             pageX: pageX,
@@ -250,7 +277,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
           $scope.$apply();
         }
         
-        console.log('dragStop: ' + pageX + " " + pageY + " " + draggable);
         $scope.dragStop({
           pageX: pageX,
           pageY: pageY,
