@@ -70,7 +70,18 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
 .directive('draggable', ['$document', '$parse', 'dragdropService', function($document, $parse, dragdropService) {
   return {
     restrict: 'A',
-    link: function link ($scope, $element, $attrs) {
+    controller: function() {
+      var draggableHandle;
+      
+      this.getSetDraggableHandle = function (handle) {
+        if (angular.isDefined(handle)) {
+          draggableHandle = handle;
+        }
+        
+        return draggableHandle;
+      };
+    },
+    link: function link ($scope, $element, $attrs, ctrl) {
       
       // PUBLIC INTERFACE VIA ATTRIBUTES
       
@@ -90,12 +101,18 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       // starting position when drag stops
       var revertOnStopCb = $parse($attrs.revertOnStop);
       
+      // PRIVATE VARS
+      
       var lastPosition,
-        startingPosition;
+        startingPosition,
+        draggableHandle = ctrl.getSetDraggableHandle() || $element;
+      
+      draggableHandle.css({
+        cursor: 'move',
+      });
       
       $element.css({
-        cursor: 'move',
-        'z-index': 10000 // TODO: get this from html
+        'z-index': 10000 // TODO: by default, get this from element current style
       });
       
       (function setupStyles() {
@@ -117,7 +134,7 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
         }
       })();
       
-      $element.bind('mousedown', mousedown);
+      draggableHandle.bind('mousedown', mousedown);
       
       function mousedown(e) {
         startingPosition = {
@@ -209,6 +226,16 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
         $scope.$apply();
         dragdropService.dragStop(pageX, pageY, getDraggableModel($scope));
       }
+    }
+  };
+}])
+
+.directive('draggableHandle', [function() {
+  return {
+    restrict: 'A',
+    require: '^draggable',
+    link: function link ($scope, $element, $attrs, draggableCtrl) {
+      draggableCtrl.getSetDraggableHandle($element);
     }
   };
 }])
