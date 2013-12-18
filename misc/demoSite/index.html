@@ -4,36 +4,73 @@
   <head>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.6.0/ui-bootstrap-tpls.min.js"></script>
-    <script src="angular-drag-drop-0.0.1.min.js"></script>
+    <script src="angular-drag-drop-0.0.1.js"></script>
     <script src="resources/app.js"></script>
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
     <link href="resources/app.css" rel="stylesheet">
   </head>
   
   <body>
-    <div ng-controller="pageController">
-      <button ng-click="click()">click me</button>
-      <div>Appointment 1: {{appointment1}}</div>
-      <div>Appointment 2: {{appointment2}}</div>
-      <div>Day 1: {{days[0]}}</div>
-      <div>Day 2: {{days[1]}}</div>
-      <div>Day 3: {{days[2]}}</div>
-      <div id="dropHere" droppable="days[0]" ng-class="{draggableOver: isDraggableOver}" drag-start="dragStart(draggable, droppable)" draggable-drop="draggableDrop(draggable, droppable)">
-        <p>Day 1</p>
-        <div ng-repeat="appointment in days[0]" class="dragMe" draggable="appointment" revert="revert()">
-          <p>Appointment {{appointment.id}}</p>
+    <div>
+      <h2>Simple Draggable Example</h2>
+      <div ng-controller="simpleDraggableCtrl">
+        <div>
+          Revert to starting position: <input type="checkbox" ng-model="revertToStart">
+        </div>
+        <div>
+          Reset model on stop: <input type="checkbox" ng-model="resetOnStop">
+        </div>
+        <div>
+          Drag status: {{dragStatus}} - Drag number: {{draggableModel.num}}
+        </div>
+        
+        <div>
+          <div class="simpleDraggableContainer">
+            <div class="simpleDraggable" draggable="draggableModel" drag-start="dragStart(pageX, pageY, draggable)"
+            drag="drag(pageX, pageY, draggable)" drag-stop="dragStop(pageX, pageY, draggable)"
+            revert-on-stop="revertOnStop()">Drag me!</div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    
+    <div>
+      <h2>Draggable with handler</h2>
+      <div class="simpleDraggableContainer">
+        <div class="simpleDraggable" revert-on-stop="true" draggable>
+          <div draggable-handle>Dragging handle</div>
+          <div>You can drag me only through the handle</div>
         </div>
       </div>
-      <div id="dropHereToo" droppable="days[1]" ng-class="{draggableOver: isDraggableOver}" drag-start="dragStart(draggable, droppable)" draggable-drop="draggableDrop(draggable, droppable)">
-        <p>Day 2</p>
-        <div ng-repeat="appointment in days[1]" class="dragMe" draggable="appointment" revert="revert()">
-          <p>Appointment {{appointment.id}}</p>
+    </div>
+    
+    <div>
+      <h2>Draggable and Droppables</h2>
+      <div ng-controller="pageController">
+        <button ng-click="click()">click me</button>
+        <div>Appointment 1: {{appointment1}}</div>
+        <div>Appointment 2: {{appointment2}}</div>
+        <div>Day 1: {{days[0]}}</div>
+        <div>Day 2: {{days[1]}}</div>
+        <div>Day 3: {{days[2]}}</div>
+        <div id="dropHere" droppable="days[0]" ng-class="{draggableOver: isDraggableOver}" drag-start="dragStart(draggable, droppable)" draggable-drop="draggableDrop(draggable, droppable)">
+          <p>Day 1</p>
+          <div ng-repeat="appointment in days[0]" class="dragMe" draggable="appointment" revert-on-stop="revert()">
+            <p>Appointment {{appointment.id}}</p>
+          </div>
         </div>
-      </div>
-      <div id="dropThree" droppable="days[2]" ng-class="{draggableOver: isDraggableOver}" drag-start="dragStart(draggable, droppable)" draggable-drop="draggableDrop(draggable, droppable)">
-        <p>Day 3</p>
-        <div ng-repeat="appointment in days[2]" class="dragMe" draggable="appointment" revert="revert()">
-          <p>Appointment {{appointment.id}}</p>
+        <div id="dropHereToo" droppable="days[1]" ng-class="{draggableOver: isDraggableOver}" drag-start="dragStart(draggable, droppable)" draggable-drop="draggableDrop(draggable, droppable)">
+          <p>Day 2</p>
+          <div ng-repeat="appointment in days[1]" class="dragMe" draggable="appointment" revert-on-stop="revert()">
+            <p>Appointment {{appointment.id}}</p>
+          </div>
+        </div>
+        <div id="dropThree" droppable="days[2]" ng-class="{draggableOver: isDraggableOver}" drag-start="dragStart(draggable, droppable)" draggable-drop="draggableDrop(draggable, droppable)">
+          <p>Day 3</p>
+          <div ng-repeat="appointment in days[2]" class="dragMe" draggable="appointment" revert-on-stop="revert()">
+            <p>Appointment {{appointment.id}}</p>
+          </div>
         </div>
       </div>
     </div>

@@ -1,8 +1,44 @@
-angular.module('app', ['angular-drag-drop']);
+angular.module('app', ['angular-drag-drop'])
 
-function pageController($scope, dragdropService) {
+.controller('simpleDraggableCtrl', function($scope) {
+  
+  $scope.draggableModel = {
+    num: 0
+  };
+  
+  $scope.dragStatus = "stop";
+  
+  $scope.revertToStart = true;
+  $scope.resetOnStop = true;
+  
+  $scope.dragStart = function(x, y, draggable) {
+    $scope.dragStatus = "dragging";
+  };
+  
+  $scope.drag = function(x, y, draggable) {
+    draggable.num++;
+  };
+  
+  $scope.dragStop = function(x, y, draggable) {
+    $scope.dragStatus = "stop";
+    if ($scope.resetOnStop) {
+      $scope.draggableModel = {
+        num: 0
+      };
+    }
+  };
+  
+  $scope.revertOnStop = function() {
+    return $scope.revertToStart;
+  };
+  
+})
+
+.controller('pageController', function ($scope, dragdropService) {
 
   var previousDay;
+
+  $scope.testVar = "pippo";
 
   $scope.appointment1 = {
     id: 1
@@ -62,4 +98,4 @@ function pageController($scope, dragdropService) {
 
     $scope.$apply();
   }
-}
+});
