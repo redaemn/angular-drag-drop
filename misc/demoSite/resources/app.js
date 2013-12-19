@@ -34,17 +34,37 @@ angular.module('app', ['angular-drag-drop'])
   
 })
 
-.controller('pageController', function ($scope, dragdropService) {
+.controller('draggableEventsController', function($scope) {
+  
+  $scope.draggableModel = {
+    num: 0
+  };
+  
+  $scope.dragStart = function(x, y, draggable) {
+    console.log('drag-start: [' + x + ', ' + y + '] - ' + draggable.num);
+  };
+  
+  $scope.drag = function(x, y, draggable) {
+    draggable.num++;
+    console.log('drag: [' + x + ', ' + y + '] - ' + draggable.num);
+  };
+  
+  $scope.dragStop = function(x, y, draggable) {
+    console.log('drag-stop: [' + x + ', ' + y + '] - ' + draggable.num);
+  };
+})
+
+.controller('draggablesAndDroppablesController', function ($scope, dragdropManager) {
 
   var previousDay;
 
-  $scope.testVar = "pippo";
-
   $scope.appointment1 = {
-    id: 1
+    id: 1,
+    isReverting: false
   };
   $scope.appointment2 = {
-    id: 2
+    id: 2,
+    isReverting: false
   };
 
   $scope.days = [
@@ -57,8 +77,11 @@ angular.module('app', ['angular-drag-drop'])
     $scope.appointment1.id += 1;
   };
 
-  $scope.dragStart = function(draggable, droppable) {
-    var idx;
+  $scope.dragStart = function(draggable) {
+    var idx,
+      droppable = dragdropManager.getCurrentDroppable();
+      
+    draggable.isReverting = false;
 
     idx = droppable.indexOf(draggable);
 
@@ -72,10 +95,16 @@ angular.module('app', ['angular-drag-drop'])
   };
 
   $scope.revert = function() {
-    var droppableHover = dragdropService.droppableHover();
-    var dragging = dragdropService.dragging();
+    var droppable = dragdropManager.getCurrentDroppable();
+    var draggable = dragdropManager.getCurrentDraggable();
 
-    return !droppableHover || droppableHover.indexOf(dragging) >= 0;
+    var isReverting = !droppable || droppable.indexOf(draggable) >= 0;
+    
+    if (isReverting) {
+      draggable.isReverting = true;
+    }
+    
+    return isReverting;
   };
 
   function add(draggable, droppable) {
