@@ -1,73 +1,121 @@
 /* global angular */
 
+/* Freely inspired by jQuery UI Draggable and Droppable widgets */
+
 /*
  * TODO:
- * - don't use $position anymore, use mouse events
- * - improve draggable interface
- * - improve demo
+ * - revert position with animation
+ * - retrieve initial draggable styles
+ * - constrain draggable movement (horizontal, vertical, only inside a container)
+ * - draggable clone while dragging
+ * - drag-drop-group to match draggables with droppables
  */
 
 angular.module('angular-drag-drop', ['ui.bootstrap.position'])
 
-.factory('dragdropService', [function() {
-  var droppables = [],
-    dragging = false,
-    droppableHover = false;
-  
-  function addDroppable(droppable) {
-    droppables.push(droppable);
-  }
-  
-  function removeDroppable(droppable) {
-    // TODO
-  }
+/*
+ * Service used to make draggables interact with droppables; it maintains the
+ * global state of the drag-drop operation
+ */
+.factory('dragdropManager', [function() {
+  var currentDraggable,
+    currentDroppable,
+    registeredDroppables = [];
   
   function dragStart(pageX, pageY, draggable) {
-    dragging = draggable;
-    angular.forEach(droppables, function(droppable) {
-      droppable.dragStart(pageX, pageY, draggable);
+    currentDraggable = draggable;
+    
+    angular.forEach(registeredDroppables, function(droppable) {
+        droppable.dragStart(pageX, pageY, draggable);
     });
   }
   
   function drag(pageX, pageY, draggable) {
-    var isOverDroppable = false;
-    
-    angular.forEach(droppables, function(droppable) {
-      if ( droppable.drag(pageX, pageY, draggable) ) {
-        isOverDroppable = droppable.model;
-      }
+    angular.forEach(registeredDroppables, function(droppable) {
+        droppable.drag(pageX, pageY, draggable);
     });
-    
-    droppableHover = isOverDroppable;
   }
   
   function dragStop(pageX, pageY, draggable) {
-    angular.forEach(droppables, function(droppable) {
-      droppable.dragStop(pageX, pageY, draggable);
+    angular.forEach(registeredDroppables, function(droppable) {
+        droppable.dragStop(pageX, pageY, draggable);
     });
-    dragging = false;
-    droppableHover = false;
+    
+    currentDraggable = currentDroppable = undefined;
   }
   
-  function isDragging() {
-    return dragging;
+  function registerDroppable(droppable) {
+    var idx;
+
+    idx = registeredDroppables.indexOf(droppable);
+
+    if (idx < 0) {
+      registeredDroppables.push(droppable);
+    }
   }
   
-  function isDroppableHover() {
-    return droppableHover;
+  function unregisterDroppable(droppable) {
+    var idx;
+
+    idx = registeredDroppables.indexOf(droppable);
+
+    if (idx >= 0) {
+      registeredDroppables.splice(idx, 1);
+    }
+  }
+  
+  function getCurrentDraggable() {
+    return currentDraggable ? currentDraggable.getModel() : undefined;
+  }
+  
+  function getCurrentDroppable() {
+    return currentDroppable ? currentDroppable.getModel() : undefined;
+  }
+  
+  function setCurrentDroppable(droppable) {
+    currentDroppable = droppable;
   }
   
   return {
-    addDroppable: addDroppable,
     dragStart: dragStart,
     drag: drag,
     dragStop: dragStop,
-    dragging: isDragging,
-    droppableHover: isDroppableHover
+    registerDroppable: registerDroppable,
+    unregisterDroppable: unregisterDroppable,
+    getCurrentDraggable: getCurrentDraggable,
+    getCurrentDroppable: getCurrentDroppable,
+    _setCurrentDroppable: setCurrentDroppable
   };
 }])
 
-.directive('draggable', ['$document', '$parse', 'dragdropService', function($document, $parse, dragdropService) {
+/*
+ * Service used to calculate draggables and droppables positions and decide
+ * whether they are positioned one above the other
+ */
+.factory('dragdropPositioning', ['$position', function($position) {
+  // In the future, I want to have different strategies to determine whether a
+  // draggable is positioned over a droppable, like jQuery UI Droppable does:
+  // [http://api.jqueryui.com/droppable/#option-tolerance]
+  
+  function isMouseOver(pageX, pageY, droppable) {
+    var offset = $position.offset(droppable.$element);
+      
+    return pageX > offset.left &&
+      pageX < offset.left + offset.width &&
+      pageY > offset.top &&
+      pageY < offset.top + offset.height;
+  }
+  
+  return {
+    isMouseOver: isMouseOver
+  };
+  
+}])
+
+.directive('draggable', [
+          '$document', '$parse', 'dragdropManager',
+  function($document,   $parse,   dragdropManager) {
+    
   return {
     restrict: 'A',
     controller: function() {
@@ -89,7 +137,7 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       var getDraggableModel = $parse($attrs.draggable);
       
       // callback to call on drag-start event
-      var dragStartCb = $parse($attrs.dragStart);
+      var dragStartCb = $parse($attrs.dragBegin); // CRAZY!! angular does not allow attributes ending with "-start"!!!
       
       // callback to call on drag event
       var dragCb = $parse($attrs.drag);
@@ -102,6 +150,13 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       var revertOnStopCb = $parse($attrs.revertOnStop);
       
       // PRIVATE VARS
+      
+      var draggable = {
+        $element: $element,
+        getModel: function() {
+          return getDraggableModel($scope);
+        }
+      };
       
       var lastPosition,
         startingPosition,
@@ -180,7 +235,7 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
         $document.unbind('mouseup', mouseup);
         $document.unbind('mousemove', mousemove);
         
-        if (revertOnStopCb($scope)) {
+        if ($scope.$apply(revertOnStopCb)) {
           $element.css({
             top: startingPosition.top,
             left: startingPosition.left
@@ -198,23 +253,25 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       }
       
       function dragStart(pageX, pageY) {
+        dragdropManager.dragStart(pageX, pageY, draggable);
+        
         dragStartCb($scope, {
           pageX: pageX,
           pageY: pageY,
           draggable: getDraggableModel($scope)
         });
         $scope.$apply();
-        dragdropService.dragStart(pageX, pageY, getDraggableModel($scope));
       }
       
       function drag(pageX, pageY) {
+        dragdropManager.drag(pageX, pageY, draggable);
+        
         dragCb($scope, {
           pageX: pageX,
           pageY: pageY,
           draggable: getDraggableModel($scope)
         });
         $scope.$apply();
-        dragdropService.drag(pageX, pageY, getDraggableModel($scope));
       }
       
       function dragStop(pageX, pageY) {
@@ -224,7 +281,8 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
           draggable: getDraggableModel($scope)
         });
         $scope.$apply();
-        dragdropService.dragStop(pageX, pageY, getDraggableModel($scope));
+        
+        dragdropManager.dragStop(pageX, pageY, draggable);
       }
     }
   };
@@ -240,115 +298,118 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
   };
 }])
 
-.directive('droppable', ['dragdropService', '$position', '$document', function(dragdropService, $position, $document) {
+.directive('droppable', [
+          '$document', '$parse', 'dragdropManager', 'dragdropPositioning',
+  function($document,   $parse,   dragdropManager,   dragdropPositioning) {
+    
   return {
     restrict: 'A',
-    transclude: true,
-    template: '<div ng-transclude></div>',
-    replace: false,
-    scope: {
-      droppable: '=',
-      dragStart: '&',
-      draggableEnter: '&',
-      draggableHover: '&',
-      draggableDrop: '&',
-      draggableLeave: '&',
-      dragStop: '&'
-    },
+    scope: true,
     link: function link ($scope, $element, $attrs) {
         
-      $scope.isDraggableOver = false;
+      // PUBLIC INTERFACE VIA ATTRIBUTES
       
+      // the model object associated with this droppable
+      var getDroppableModel = $parse($attrs.droppable);
+      
+      // callback to call when a draggable enters this droppable
+      var draggableEnterCb = $parse($attrs.draggableEnter);
+      
+      // callback to call when a draggable is hovering over this droppable
+      var draggableHoverCb = $parse($attrs.draggableHover);
+      
+      // callback to call when a draggable is dropped over this droppable
+      var draggableDropCb = $parse($attrs.draggableDrop);
+      
+      // callback to call when a draggable leaves this droppable
+      var draggableLeaveCb = $parse($attrs.draggableLeave);
+      
+      // PUBLIC PROPERTIES
+      
+      // will be true while a draggable is being dragged over this droppable
+      $scope.isDraggableHover = false;
+      
+      // PRIVATE VARS
+      
+      var droppable = {
+        dragStart: dragStart,
+        drag: drag,
+        dragStop: dragStop,
+        $element: $element,
+        getModel: function() {
+          return getDroppableModel($scope);
+        }
+      };
+      
+      dragdropManager.registerDroppable(droppable);
+      
+      $element.on('$destroy', function(){
+        dragdropManager.unregisterDroppable(droppable);
+      });
+      
+      // I CAN'T USE MOUSE EVENTS BECAUSE THEY DON'T FIRE ON THE DROPPABLE
       function dragStart(pageX, pageY, draggable) {
-        $scope.dragStart({
-          pageX: pageX,
-          pageY: pageY,
-          draggable: draggable,
-          droppable: $scope.droppable
-        });
-        if (isOverMe(pageX, pageY)) {
-          $scope.isDraggableOver = true;
-          $scope.$parent.$apply();
+        if (dragdropPositioning.isMouseOver(pageX, pageY, droppable)) {
+          $scope.isDraggableHover = true;
+          dragdropManager._setCurrentDroppable(droppable);
+          $scope.$apply();
         }
       }
       
       function drag(pageX, pageY, draggable) {
+        var isMouseOverDroppable = dragdropPositioning.isMouseOver(pageX, pageY, droppable);
         
-        if (isOverMe(pageX, pageY) && !$scope.isDraggableOver) {
-          $scope.isDraggableOver = true;
-          $scope.$apply();
+        if (isMouseOverDroppable && !$scope.isDraggableHover) {
+          $scope.isDraggableHover = true;
+          dragdropManager._setCurrentDroppable(droppable);
           
-          $scope.draggableEnter({
+          draggableEnterCb($scope, {
             pageX: pageX,
             pageY: pageY,
-            draggable: draggable,
-            droppable: $scope.droppable
+            draggable: draggable.getModel(),
+            droppable: getDroppableModel($scope)
           });
-        }
-        else if (isOverMe(pageX, pageY) && $scope.isDraggableOver) {
-          $scope.draggableHover({
-            pageX: pageX,
-            pageY: pageY,
-            draggable: draggable,
-            droppable: $scope.droppable
-          });
-        }
-        else if (!isOverMe(pageX, pageY) && $scope.isDraggableOver) {
-          $scope.isDraggableOver = false;
-          $scope.$apply();
           
-          $scope.draggableLeave({
+          $scope.$apply();
+        }
+        else if (isMouseOverDroppable && $scope.isDraggableHover) {
+          draggableHoverCb($scope, {
             pageX: pageX,
             pageY: pageY,
-            draggable: draggable,
-            droppable: $scope.droppable
+            draggable: draggable.getModel(),
+            droppable: getDroppableModel($scope)
           });
+          
+          $scope.$apply();
         }
-        /*else if (!isOverMe(pageX, pageY) && !$scope.isDraggableOver) {
-          $scope.drag(pageX, pageY, draggable, $scope.droppable);
-        }*/
-        
-        return $scope.isDraggableOver;
+        else if (!isMouseOverDroppable && $scope.isDraggableHover) {
+          $scope.isDraggableHover = false;
+          dragdropManager._setCurrentDroppable(undefined);
+          
+          draggableLeaveCb($scope, {
+            pageX: pageX,
+            pageY: pageY,
+            draggable: draggable.getModel(),
+            droppable: getDroppableModel($scope)
+          });
+          
+          $scope.$apply();
+        }
       }
       
       function dragStop(pageX, pageY, draggable) {
-        if ($scope.isDraggableOver) {
-          $scope.isDraggableOver = false;
-          $scope.draggableDrop({
+        if ($scope.isDraggableHover) {
+          $scope.isDraggableHover = false;
+          draggableDropCb($scope, {
             pageX: pageX,
             pageY: pageY,
-            draggable: draggable,
-            droppable: $scope.droppable
+            draggable: draggable.getModel(),
+            droppable: getDroppableModel($scope)
           });
           $scope.$apply();
         }
-        
-        $scope.dragStop({
-          pageX: pageX,
-          pageY: pageY,
-          draggable: draggable,
-          droppable: $scope.droppable
-        });
       }
       
-      function isOverMe(pageX, pageY) {
-        var offset = $position.offset($element),
-          isOver;
-        
-        isOver = pageX > offset.left &&
-          pageX < offset.left + offset.width &&
-          pageY > offset.top &&
-          pageY < offset.top + offset.height;
-           
-        return isOver;
-      }
-      
-      dragdropService.addDroppable({
-        dragStart: dragStart,
-        drag: drag,
-        dragStop: dragStop,
-        model: $scope.droppable
-      });
     }
   };
 }]);
