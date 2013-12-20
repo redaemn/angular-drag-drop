@@ -71,7 +71,7 @@ module.exports = function(grunt) {
     
     clean: {
       dist: ['dist/*.js'],
-      demoSite: ['dist/resources/', 'dist/index.html']
+      demoSite: ['dist/**/*', '!dist/*.js']
     },
     
     copy: {
@@ -82,7 +82,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: "misc/demoSite",
-          src: ["index.html", "resources/*"],
+          src: ["index.html", "sitemap.xml", "resources/*"],
           dest: "dist/"
         }]
       }
