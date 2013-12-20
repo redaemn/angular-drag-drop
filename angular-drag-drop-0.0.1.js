@@ -1,3 +1,12 @@
+/*
+ * angular-drag-drop v0.0.1 [https://github.com/redaemn/angular-drag-drop]
+ * 2013-12-20
+ *
+ * This software is licensed under The MIT License (MIT)
+ * Copyright (c) 2013 Gabriele Rabbiosi [https://plus.google.com/+GabrieleRabbiosi/]
+ * [https://github.com/redaemn/angular-drag-drop/blob/master/LICENSE]
+ */
+
 /* global angular */
 
 /* Freely inspired by jQuery UI Draggable and Droppable widgets */
