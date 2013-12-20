@@ -40,8 +40,8 @@ angular.module('app', ['angular-drag-drop'])
     num: 0
   };
   
-  $scope.dragStart = function(x, y, draggable) {
-    console.log('drag-start: [' + x + ', ' + y + '] - ' + draggable.num);
+  $scope.dragBegin = function(x, y, draggable) {
+    console.log('drag-begin: [' + x + ', ' + y + '] - ' + draggable.num);
   };
   
   $scope.drag = function(x, y, draggable) {
@@ -51,6 +51,47 @@ angular.module('app', ['angular-drag-drop'])
   
   $scope.dragStop = function(x, y, draggable) {
     console.log('drag-stop: [' + x + ', ' + y + '] - ' + draggable.num);
+  };
+})
+
+.controller('draggableDroppableEventsController', function($scope) {
+  
+  $scope.draggableModel = {
+    num: 0
+  };
+  
+  $scope.droppableModel = {
+    num: 0
+  }
+  
+  $scope.dragBegin = function(x, y, draggable) {
+    console.log('drag-begin: [' + x + ', ' + y + '] - drag: ' + draggable.num);
+  };
+  
+  $scope.drag = function(x, y, draggable) {
+    draggable.num++;
+    console.log('drag: [' + x + ', ' + y + '] - drag: ' + draggable.num);
+  };
+  
+  $scope.dragStop = function(x, y, draggable) {
+    console.log('drag-stop: [' + x + ', ' + y + '] - drag: ' + draggable.num);
+  };
+  
+  $scope.draggableEnter = function(x, y, draggable, droppable) {
+    console.log('draggable-enter: [' + x + ', ' + y + '] - drag: ' + draggable.num + ', drop: ' + droppable.num);
+  };
+  
+  $scope.draggableHover = function(x, y, draggable, droppable) {
+    droppable.num++;
+    console.log('draggable-hover: [' + x + ', ' + y + '] - drag: ' + draggable.num + ', drop: ' + droppable.num);
+  };
+  
+  $scope.draggableDrop = function(x, y, draggable, droppable) {
+    console.log('draggable-drop: [' + x + ', ' + y + '] - drag: ' + draggable.num + ', drop: ' + droppable.num);
+  };
+  
+  $scope.draggableLeave = function(x, y, draggable, droppable) {
+    console.log('draggable-leave: [' + x + ', ' + y + '] - drag: ' + draggable.num + ', drop: ' + droppable.num);
   };
 })
 
