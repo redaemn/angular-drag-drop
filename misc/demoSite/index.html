@@ -25,6 +25,11 @@
   </head>
   
   <body>
+    <h1>AngularJs native Draggable and Droppable directives</h1>
+    <h3>(Freely inspired by jQuery UI Draggable and Droppable widgets)</h3>
+  
+    Code on <a href="https://github.com/redaemn/angular-drag-drop" target="_blank">GithHub</a>
+  
     <div>
       <h2>Simple Draggable Example</h2>
       <div ng-controller="simpleDraggableCtrl">
@@ -51,8 +56,9 @@
     
     <div>
       <h2>Draggable events</h2>
+      (open browser console to see the events)
       <div ng-controller="draggableEventsController">
-        <div class="simpleDraggable" draggable="draggableModel" drag-begin="dragStart(pageX, pageY, draggable)"
+        <div class="simpleDraggable" draggable="draggableModel" drag-begin="dragBegin(pageX, pageY, draggable)"
         drag="drag(pageX, pageY, draggable)" drag-stop="dragStop(pageX, pageY, draggable)">Drag me!</div>
       </div>
     </div>
@@ -68,7 +74,19 @@
     </div>
     
     <div>
-      <h2>Draggable and Droppables</h2>
+      <h2>Draggable and Droppable events</h2>
+      (open browser console to see the events)
+      <div ng-controller="draggableDroppableEventsController">
+        <div class="simpleDraggable" draggable="draggableModel" drag-begin="dragBegin(pageX, pageY, draggable)"
+        drag="drag(pageX, pageY, draggable)" drag-stop="dragStop(pageX, pageY, draggable)">Drag me!</div>
+        <div droppable="droppableModel" style="float: none;" ng-class="{draggableOver: isDraggableHover}"
+        draggable-enter="draggableEnter(pageX, pageY, draggable, droppable)" draggable-hover="draggableHover(pageX, pageY, draggable, droppable)"
+        draggable-drop="draggableDrop(pageX, pageY, draggable, droppable)" draggable-leave="draggableLeave(pageX, pageY, draggable, droppable)">Drop here!</div>
+      </div>
+    </div>
+    
+    <div>
+      <h2>Draggables and Droppables</h2>
       <div ng-controller="draggablesAndDroppablesController">
         
         <div ng-repeat="appointment in appointments">
