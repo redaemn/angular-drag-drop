@@ -4,7 +4,7 @@
 
 /*
  * TODO:
- * - revert position with animation
+ * - revert position with animation using ng-animate
  * - retrieve initial draggable styles
  * - constrain draggable movement (horizontal, vertical, only inside a container)
  * - draggable clone while dragging
