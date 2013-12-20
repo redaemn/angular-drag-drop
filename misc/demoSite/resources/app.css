@@ -33,30 +33,26 @@ div[draggable], div[droppable] {
   text-align: center;
 }
 
-.reverting-position {
+.animate-move {
   transition: top 1s, left 1s;
   -webkit-transition: top 1s, left 1s;
 }
 
-#dropHere {
-  height: 120px;
-  width: 120px;
-  border: 1px solid green;
-  margin-top: 50px;
+.calendar:after {
+  content: "."; 
+  visibility: hidden; 
+  display: block; 
+  height: 0; 
+  clear: both;
 }
 
-#dropHereToo {
-  height: 120px;
-  width: 120px;
-  border: 1px solid yellow;
-  margin-top: 50px;
-}
-
-#dropThree {
+div[droppable] {
   height: 120px;
   width: 120px;
   border: 1px solid blue;
-  margin-top: 50px;
+  margin-top: 10px;
+  margin-left: 10px;
+  float: left;
 }
 
 div[droppable].draggableOver {

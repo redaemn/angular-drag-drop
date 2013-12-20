@@ -58,71 +58,93 @@ angular.module('app', ['angular-drag-drop'])
 
   var previousDay;
 
-  $scope.appointment1 = {
-    id: 1,
-    isReverting: false
+  $scope.appointments = [];
+  
+  (function() {
+    var i = 0;
+    
+    for ( ; i < 2; i++) {
+      $scope.appointments.push(
+        {
+          id: i+1,
+          animateMove: false
+        }
+      );
+    }
+    
+  })();
+
+  $scope.days = [];
+  
+  (function() {
+    var i;
+    
+    for (i = 0; i < 20; i++) {
+      $scope.days.push([]);
+    }
+    
+    for (i = 0; i < $scope.appointments.length; i++) {
+      $scope.days[0].push(
+        $scope.appointments[i]
+      );
+    }
+    
+  })();
+
+  $scope.increment = function(appointment) {
+    appointment.id += 1;
   };
-  $scope.appointment2 = {
-    id: 2,
-    isReverting: false
+  
+  $scope.decrement = function(appointment) {
+    appointment.id -= 1;
   };
 
-  $scope.days = [
-    [$scope.appointment1, $scope.appointment2],
-    [],
-    []
-  ];
-
-  $scope.click = function() {
-    $scope.appointment1.id += 1;
-  };
-
-  $scope.dragStart = function(draggable) {
+  $scope.dragStart = function(appointment) {
     var idx,
-      droppable = dragdropManager.getCurrentDroppable();
+      day = dragdropManager.getCurrentDroppable();
       
-    draggable.isReverting = false;
+    appointment.animateMove = false;
 
-    idx = droppable.indexOf(draggable);
+    idx = day.indexOf(appointment);
 
     if (idx >= 0) {
-      previousDay = droppable;
+      previousDay = day;
     }
   };
 
-  $scope.draggableDrop = function(draggable, droppable) {
-    add(draggable, droppable);
+  $scope.draggableDrop = function(appointment, day) {
+    add(appointment, day);
   };
 
   $scope.revert = function() {
-    var droppable = dragdropManager.getCurrentDroppable();
-    var draggable = dragdropManager.getCurrentDraggable();
+    var currentDay = dragdropManager.getCurrentDroppable();
+    var currentAppointment = dragdropManager.getCurrentDraggable();
 
-    var isReverting = !droppable || droppable.indexOf(draggable) >= 0;
+    var isReverting = !currentDay || currentDay.indexOf(currentAppointment) >= 0;
     
     if (isReverting) {
-      draggable.isReverting = true;
+      currentAppointment.animateMove = true;
     }
     
     return isReverting;
   };
 
-  function add(draggable, droppable) {
-    if (droppable.indexOf(draggable) < 0) {
-      remove(draggable, previousDay);
-      droppable.push(draggable);
+  function add(appointment, day) {
+    if (day.indexOf(appointment) < 0) {
+      remove(appointment, previousDay);
+      day.push(appointment);
     }
 
     $scope.$apply();
   }
 
-  function remove(draggable, droppable) {
+  function remove(appointment, day) {
     var idx;
 
-    idx = droppable.indexOf(draggable);
+    idx = day.indexOf(appointment);
 
     if (idx >= 0) {
-      droppable.splice(idx, 1);
+      day.splice(idx, 1);
     }
 
     $scope.$apply();

@@ -56,30 +56,24 @@
     <div>
       <h2>Draggable and Droppables</h2>
       <div ng-controller="draggablesAndDroppablesController">
-        <button ng-click="click()">click me</button>
-        <div>Appointment 1: {{appointment1}}</div>
-        <div>Appointment 2: {{appointment2}}</div>
-        <div>Day 1: {{days[0]}}</div>
-        <div>Day 2: {{days[1]}}</div>
-        <div>Day 3: {{days[2]}}</div>
-        <div id="dropHere" droppable="days[0]" ng-class="{draggableOver: isDraggableHover}" draggable-drop="draggableDrop(draggable, droppable)">
-          <p>Day 1</p>
-          <div ng-repeat="appointment in days[0]" class="dragMe" ng-class="{'reverting-position': appointment.isReverting}" draggable="appointment" drag-begin="dragStart(draggable)" revert-on-stop="revert()">
-            <p>Appointment {{appointment.id}}</p>
+        
+        <div ng-repeat="appointment in appointments">
+          Appointment {{appointment.id}}: {{appointment}}
+          <button ng-click="increment(appointment)">+</button>
+          <button ng-click="decrement(appointment)">-</button>
+        </div>
+        
+        <div ng-repeat="day in days">Day {{$index + 1}}: {{day}}</div>
+        
+        <div class="calendar">
+          <div ng-repeat="day in days" droppable="day" ng-class="{draggableOver: isDraggableHover}" draggable-drop="draggableDrop(draggable, droppable)">
+            <p>Day {{$index + 1}}</p>
+            <div ng-repeat="appointment in day" class="dragMe" ng-class="{'animate-move': appointment.animateMove}" draggable="appointment" drag-begin="dragStart(draggable)" revert-on-stop="revert()">
+              <p>Appointment {{appointment.id}}</p>
+            </div>
           </div>
         </div>
-        <div id="dropHereToo" droppable="days[1]" ng-class="{draggableOver: isDraggableHover}" draggable-drop="draggableDrop(draggable, droppable)">
-          <p>Day 2</p>
-          <div ng-repeat="appointment in days[1]" class="dragMe" ng-class="{'reverting-position': appointment.isReverting}" draggable="appointment" drag-begin="dragStart(draggable)" revert-on-stop="revert()">
-            <p>Appointment {{appointment.id}}</p>
-          </div>
-        </div>
-        <div id="dropThree" droppable="days[2]" ng-class="{draggableOver: isDraggableHover}" draggable-drop="draggableDrop(draggable, droppable)">
-          <p>Day 3</p>
-          <div ng-repeat="appointment in days[2]" class="dragMe" ng-class="{'reverting-position': appointment.isReverting}" draggable="appointment" drag-begin="dragStart(draggable)" revert-on-stop="revert()">
-            <p>Appointment {{appointment.id}}</p>
-          </div>
-        </div>
+        
       </div>
     </div>
   </body>
