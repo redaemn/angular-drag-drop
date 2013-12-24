@@ -22,14 +22,14 @@ module.exports = function(grunt) {
           banner: '<%= commons.banner %>'
         },
         files: {
-          'dist/<%= filename %>-<%= pkg.version %>.js': ['src/**/*.js']
+          'dist/<%= filename %>-<%= pkg.version %>.js': ['src/angular-drag-drop-header.js', 'src/**/*.js', '!src/angular-drag-drop-footer.js', 'src/angular-drag-drop-footer.js']
         }
       }
     },
     
     jshint: {
       chore: ['package.json', 'Gruntfile.js', 'karma.conf.js'],
-      dist: ['Gruntfile.js','src/**/*.js', 'test/**/*.js']
+      dist: ['src/**/*.js', '!src/angular-drag-drop-*.js']
     },
     
     uglify: {
@@ -41,7 +41,7 @@ module.exports = function(grunt) {
           banner: '<%= commons.banner %>'
         },
         files: {
-          'dist/<%= filename %>-<%= pkg.version %>.min.js': ['src/**/*.js']
+          'dist/<%= filename %>-<%= pkg.version %>.min.js': ['dist/<%= filename %>-<%= pkg.version %>.js']
         }
       }
     },
