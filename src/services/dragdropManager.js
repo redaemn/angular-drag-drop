@@ -1,10 +1,8 @@
-angular.module(MODULE_NAME)
-
 /*
  * Service used to make draggables interact with droppables; it maintains the
  * global state of the drag-drop operation
  */
-.factory('dragdropManager', [function() {
+module.factory('dragdropManager', [function() {
   var currentDraggable,
     currentDroppable,
     registeredDroppables = [];

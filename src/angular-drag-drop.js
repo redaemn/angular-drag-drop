@@ -9,8 +9,4 @@
  * - drag-drop-group to match draggables with droppables
  */
 
-(function(angular, undefined) {
-
-var MODULE_NAME = 'angular-drag-drop';
-
-angular.module(MODULE_NAME, ['ui.bootstrap.position']);
+var module = angular.module('angular-drag-drop', ['ui.bootstrap.position']);

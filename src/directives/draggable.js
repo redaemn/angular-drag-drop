@@ -1,6 +1,4 @@
-angular.module(MODULE_NAME)
-
-.directive('draggable', [
+module.directive('draggable', [
           '$document', '$parse', 'dragdropManager',
   function($document,   $parse,   dragdropManager) {
     
@@ -174,9 +172,9 @@ angular.module(MODULE_NAME)
       }
     }
   };
-}])
+}]);
 
-.directive('draggableHandle', [function() {
+module.directive('draggableHandle', [function() {
   return {
     restrict: 'A',
     require: '^draggable',

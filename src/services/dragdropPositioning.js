@@ -1,10 +1,8 @@
-angular.module(MODULE_NAME)
-
 /*
  * Service used to calculate draggables and droppables positions and decide
  * whether they are positioned one above the other
  */
-.factory('dragdropPositioning', ['$position', function($position) {
+module.factory('dragdropPositioning', ['$position', function($position) {
   // In the future, I want to have different strategies to determine whether a
   // draggable is positioned over a droppable, like jQuery UI Droppable does:
   // [http://api.jqueryui.com/droppable/#option-tolerance]
