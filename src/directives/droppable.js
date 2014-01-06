@@ -1,6 +1,6 @@
 // I can't implement droppable using mouse events because they don't fire on
 // the droppable element (because there's the draggable between it and the mouse)
-module.directive('droppable', [
+dragdropModule.directive('droppable', [
           '$document', '$parse', 'dragdropManager', 'dragdropPositioning',
   function($document,   $parse,   dragdropManager,   dragdropPositioning) {
     

@@ -1,4 +1,4 @@
-module.directive('draggable', [
+dragdropModule.directive('draggable', [
           '$document', '$parse', 'dragdropManager',
   function($document,   $parse,   dragdropManager) {
     
@@ -174,7 +174,7 @@ module.directive('draggable', [
   };
 }]);
 
-module.directive('draggableHandle', [function() {
+dragdropModule.directive('draggableHandle', [function() {
   return {
     restrict: 'A',
     require: '^draggable',

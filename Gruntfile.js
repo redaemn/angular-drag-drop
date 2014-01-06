@@ -29,7 +29,7 @@ module.exports = function(grunt) {
     
     jshint: {
       chore: ['package.json', 'Gruntfile.js', 'karma.conf.js'],
-      dist: ['src/**/*.js']
+      dist: ['src/**/*.js', 'test/**/*.js']
     },
     
     uglify: {
