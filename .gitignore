@@ -1,5 +1,6 @@
 .c9revisions/
 node_modules/
+bower_components/
 coverage/
 dist/
 *.sublime-project

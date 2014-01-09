@@ -8,9 +8,9 @@ module.exports = function(config) {
     
     // list of files / patterns to load in the browser
     files: [
-      'lib/angular.min.js',
-      'lib/angular-mocks.js',
-      'lib/ui-bootstrap-tpls-0.7.0.js',
+      'bower_components/angular/angular.min.js',
+      'bower_components/angular-mocks/angular-mocks.js',
+      'bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
       'src/angular-drag-drop.js',
       'src/**/*.js',
       'test/**/*.js'
