@@ -1,13 +1,14 @@
 /*
  * angular-drag-drop v0.0.1 [https://github.com/redaemn/angular-drag-drop]
- * 2013-12-20
+ * 2014-01-10
  *
  * This software is licensed under The MIT License (MIT)
- * Copyright (c) 2013 Gabriele Rabbiosi [https://plus.google.com/+GabrieleRabbiosi/]
+ * Copyright (c) 2014 Gabriele Rabbiosi [https://plus.google.com/+GabrieleRabbiosi/]
  * [https://github.com/redaemn/angular-drag-drop/blob/master/LICENSE]
  */
 
-/* global angular */
+
+(function(angular, undefined) {
 
 /* Freely inspired by jQuery UI Draggable and Droppable widgets */
 
@@ -20,108 +21,9 @@
  * - drag-drop-group to match draggables with droppables
  */
 
-angular.module('angular-drag-drop', ['ui.bootstrap.position'])
+var dragdropModule = angular.module('angular-drag-drop', ['ui.bootstrap.position']);
 
-/*
- * Service used to make draggables interact with droppables; it maintains the
- * global state of the drag-drop operation
- */
-.factory('dragdropManager', [function() {
-  var currentDraggable,
-    currentDroppable,
-    registeredDroppables = [];
-  
-  function dragStart(pageX, pageY, draggable) {
-    currentDraggable = draggable;
-    
-    angular.forEach(registeredDroppables, function(droppable) {
-        droppable.dragStart(pageX, pageY, draggable);
-    });
-  }
-  
-  function drag(pageX, pageY, draggable) {
-    angular.forEach(registeredDroppables, function(droppable) {
-        droppable.drag(pageX, pageY, draggable);
-    });
-  }
-  
-  function dragStop(pageX, pageY, draggable) {
-    angular.forEach(registeredDroppables, function(droppable) {
-        droppable.dragStop(pageX, pageY, draggable);
-    });
-    
-    currentDraggable = currentDroppable = undefined;
-  }
-  
-  function registerDroppable(droppable) {
-    var idx;
-
-    idx = registeredDroppables.indexOf(droppable);
-
-    if (idx < 0) {
-      registeredDroppables.push(droppable);
-    }
-  }
-  
-  function unregisterDroppable(droppable) {
-    var idx;
-
-    idx = registeredDroppables.indexOf(droppable);
-
-    if (idx >= 0) {
-      registeredDroppables.splice(idx, 1);
-    }
-  }
-  
-  function getCurrentDraggable() {
-    return currentDraggable ? currentDraggable.getModel() : undefined;
-  }
-  
-  function getCurrentDroppable() {
-    return currentDroppable ? currentDroppable.getModel() : undefined;
-  }
-  
-  function setCurrentDroppable(droppable) {
-    currentDroppable = droppable;
-  }
-  
-  return {
-    dragStart: dragStart,
-    drag: drag,
-    dragStop: dragStop,
-    registerDroppable: registerDroppable,
-    unregisterDroppable: unregisterDroppable,
-    getCurrentDraggable: getCurrentDraggable,
-    getCurrentDroppable: getCurrentDroppable,
-    _setCurrentDroppable: setCurrentDroppable
-  };
-}])
-
-/*
- * Service used to calculate draggables and droppables positions and decide
- * whether they are positioned one above the other
- */
-.factory('dragdropPositioning', ['$position', function($position) {
-  // In the future, I want to have different strategies to determine whether a
-  // draggable is positioned over a droppable, like jQuery UI Droppable does:
-  // [http://api.jqueryui.com/droppable/#option-tolerance]
-  
-  function isMouseOver(pageX, pageY, droppable) {
-    var offset = $position.offset(droppable.$element);
-      
-    return pageX > offset.left &&
-      pageX < offset.left + offset.width &&
-      pageY > offset.top &&
-      pageY < offset.top + offset.height;
-  }
-  
-  return {
-    isMouseOver: isMouseOver
-  };
-  
-}])
-
-.directive('draggable', [
+dragdropModule.directive('draggable', [
           '$document', '$parse', 'dragdropManager',
   function($document,   $parse,   dragdropManager) {
     
@@ -295,9 +197,9 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       }
     }
   };
-}])
+}]);
 
-.directive('draggableHandle', [function() {
+dragdropModule.directive('draggableHandle', [function() {
   return {
     restrict: 'A',
     require: '^draggable',
@@ -305,9 +207,11 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
       draggableCtrl.getSetDraggableHandle($element);
     }
   };
-}])
+}]);
 
-.directive('droppable', [
+// I can't implement droppable using mouse events because they don't fire on
+// the droppable element (because there's the draggable between it and the mouse)
+dragdropModule.directive('droppable', [
           '$document', '$parse', 'dragdropManager', 'dragdropPositioning',
   function($document,   $parse,   dragdropManager,   dragdropPositioning) {
     
@@ -356,7 +260,6 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
         dragdropManager.unregisterDroppable(droppable);
       });
       
-      // I CAN'T USE MOUSE EVENTS BECAUSE THEY DON'T FIRE ON THE DROPPABLE
       function dragStart(pageX, pageY, draggable) {
         if (dragdropPositioning.isMouseOver(pageX, pageY, droppable)) {
           $scope.isDraggableHover = true;
@@ -422,3 +325,105 @@ angular.module('angular-drag-drop', ['ui.bootstrap.position'])
     }
   };
 }]);
+
+/*
+ * Service used to make draggables interact with droppables; it maintains the
+ * global state of the drag-drop operation
+ */
+dragdropModule.factory('dragdropManager', [function() {
+  var currentDraggable,
+    currentDroppable,
+    registeredDroppables = [];
+  
+  function dragStart(pageX, pageY, draggable) {
+    currentDraggable = draggable;
+    
+    angular.forEach(registeredDroppables, function(droppable) {
+        droppable.dragStart(pageX, pageY, draggable);
+    });
+  }
+  
+  function drag(pageX, pageY, draggable) {
+    angular.forEach(registeredDroppables, function(droppable) {
+        droppable.drag(pageX, pageY, draggable);
+    });
+  }
+  
+  function dragStop(pageX, pageY, draggable) {
+    angular.forEach(registeredDroppables, function(droppable) {
+        droppable.dragStop(pageX, pageY, draggable);
+    });
+    
+    currentDraggable = currentDroppable = undefined;
+  }
+  
+  function registerDroppable(droppable) {
+    var idx;
+
+    idx = registeredDroppables.indexOf(droppable);
+
+    if (idx < 0) {
+      registeredDroppables.push(droppable);
+    }
+  }
+  
+  function unregisterDroppable(droppable) {
+    var idx;
+
+    idx = registeredDroppables.indexOf(droppable);
+
+    if (idx >= 0) {
+      registeredDroppables.splice(idx, 1);
+    }
+  }
+  
+  function getCurrentDraggable() {
+    return currentDraggable ? currentDraggable.getModel() : undefined;
+  }
+  
+  function getCurrentDroppable() {
+    return currentDroppable ? currentDroppable.getModel() : undefined;
+  }
+  
+  function setCurrentDroppable(droppable) {
+    currentDroppable = droppable;
+  }
+  
+  return {
+    dragStart: dragStart,
+    drag: drag,
+    dragStop: dragStop,
+    registerDroppable: registerDroppable,
+    unregisterDroppable: unregisterDroppable,
+    getCurrentDraggable: getCurrentDraggable,
+    getCurrentDroppable: getCurrentDroppable,
+    _setCurrentDroppable: setCurrentDroppable
+  };
+}]);
+
+/*
+ * Service used to calculate draggables and droppables positions and decide
+ * whether they are positioned one above the other
+ */
+dragdropModule.factory('dragdropPositioning', ['$position', function($position) {
+  // In the future, I want to have different strategies to determine whether a
+  // draggable is positioned over a droppable, like jQuery UI Droppable does:
+  // [http://api.jqueryui.com/droppable/#option-tolerance]
+  
+  function isMouseOver(pageX, pageY, droppable) {
+    var offset = $position.offset(droppable.$element);
+      
+    return pageX > offset.left &&
+      pageX < offset.left + offset.width &&
+      pageY > offset.top &&
+      pageY < offset.top + offset.height;
+  }
+  
+  return {
+    isMouseOver: isMouseOver
+  };
+  
+}]);
+
+
+})(window.angular);
