@@ -12,6 +12,7 @@ module.exports = function(config) {
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
       'bower_components/jquery/jquery.min.js',
+      'bower_components/jquery-simulate/jquery.simulate.js',
       'src/angular-drag-drop.js',
       'src/**/*.js',
       'test/**/*.js'
