@@ -4,3 +4,11 @@ angular-drag-drop
 =================
 
 AngularJS plugin that implements draggable and droppable utilities
+
+## License
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Gabriele Rabbiosi https://plus.google.com/+GabrieleRabbiosi/
+
+<https://github.com/redaemn/angular-drag-drop/blob/master/LICENSE>
