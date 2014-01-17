@@ -47,12 +47,17 @@ module.exports = function(grunt) {
     },
     
     karma: {
+      options: {
+        configFile: 'karma.conf.js'
+      },
       singleRun: {
-        configFile: 'karma.conf.js',
         singleRun: true
       },
+      travis: {
+        singleRun: true,
+        browsers: ['PhantomJS']
+      },
       coverage: {
-        configFile: 'karma.conf.js',
         singleRun: true,
         preprocessors: {
           'src/**/*.js': 'coverage'
@@ -64,7 +69,6 @@ module.exports = function(grunt) {
         }
       },
       watch: {
-        configFile: 'karma.conf.js',
         autoWatch: true
       }
     },
