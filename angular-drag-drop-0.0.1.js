@@ -1,6 +1,6 @@
 /*
  * angular-drag-drop v0.0.1 [https://github.com/redaemn/angular-drag-drop]
- * 2014-01-10
+ * 2014-04-23
  *
  * This software is licensed under The MIT License (MIT)
  * Copyright (c) 2014 Gabriele Rabbiosi [https://plus.google.com/+GabrieleRabbiosi/]
@@ -100,12 +100,25 @@ dragdropModule.directive('draggable', [
         }
       })();
       
-      draggableHandle.bind('mousedown', mousedown);
+      draggableHandle.bind('touchstart mousedown', mousedown);
+
+      function getEventPosition(e) {
+        var posObj = e.type.indexOf('touch') === 0 ? e.changedTouches[0] : e;
+
+        return {
+          x: posObj.pageX,
+          y: posObj.pageY
+        };
+      }
       
       function mousedown(e) {
+        e.preventDefault();
+
+        var eventPosition = getEventPosition(e);
+
         startingPosition = {
-          pageX: e.pageX,
-          pageY: e.pageY,
+          pageX: eventPosition.x,
+          pageY: eventPosition.y,
           'top': $element.css('top'),
           'left': $element.css('left')
         };
@@ -113,38 +126,43 @@ dragdropModule.directive('draggable', [
         $element.css('z-index', 10001);
         
         lastPosition = {
-          pageX: e.pageX,
-          pageY: e.pageY
+          pageX: eventPosition.x,
+          pageY: eventPosition.y
         };
         
-        dragStart(e.pageX, e.pageY);
+        dragStart(eventPosition.x, eventPosition.y);
         
-        $document.bind('mousemove', mousemove);
-        $document.bind('mouseup', mouseup);
-        
-        e.preventDefault();
+        $document.bind('touchmove mousemove', mousemove);
+        $document.bind('touchend mouseup', mouseup);
       }
       
       function mousemove(e) {
+        e.preventDefault();
+
         var elemTop = parseInt($element.css('top'), 10),
-          elemLeft = parseInt($element.css('left'), 10);
+          elemLeft = parseInt($element.css('left'), 10),
+          eventPosition = getEventPosition(e);
         
         $element.css({
-          'top': (elemTop + (e.pageY - lastPosition.pageY)) + 'px',
-          'left': (elemLeft + (e.pageX - lastPosition.pageX)) + 'px'
+          'top': (elemTop + (eventPosition.y - lastPosition.pageY)) + 'px',
+          'left': (elemLeft + (eventPosition.x - lastPosition.pageX)) + 'px'
         });
         
         lastPosition = {
-          pageX: e.pageX,
-          pageY: e.pageY
+          pageX: eventPosition.x,
+          pageY: eventPosition.y
         };
         
-        drag(e.pageX, e.pageY);
+        drag(eventPosition.x, eventPosition.y);
       }
       
       function mouseup(e) {
-        $document.unbind('mouseup', mouseup);
-        $document.unbind('mousemove', mousemove);
+        e.preventDefault();
+
+        var eventPosition = getEventPosition(e);
+
+        $document.unbind('touchend mouseup', mouseup);
+        $document.unbind('touchmove mousemove', mousemove);
         
         if ($scope.$apply(revertOnStopCb)) {
           $element.css({
@@ -156,7 +174,7 @@ dragdropModule.directive('draggable', [
           dragStop(startingPosition.pageX, startingPosition.pageY);
         }
         else {
-          dragStop(e.pageX, e.pageY);
+          dragStop(eventPosition.x, eventPosition.y);
         }
         
         lastPosition = undefined;
