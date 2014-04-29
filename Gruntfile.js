@@ -13,6 +13,9 @@ module.exports = function(grunt) {
               ' * This software is licensed under The MIT License (MIT)\n' +
               ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> [<%= pkg.author.url %>]\n' +
               ' * [https://github.com/redaemn/angular-drag-drop/blob/master/LICENSE]\n' +
+              ' *\n' +
+              ' * Some code is taken from the AngularUI Bootstrap project [http://angular-ui.github.io/bootstrap/]\n' +
+              ' * Copyright (c) 2012-2014 the AngularUI Team [https://github.com/angular-ui/bootstrap/blob/master/LICENSE]\n' +
               ' */\n\n'
     },
     
