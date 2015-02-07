@@ -66,11 +66,11 @@ dragdropModule.directive('draggable', [
           $element.css('position', 'relative');
         }
         
-        if (top === '') {
+        if (top === ''  || top === 'auto') {
           $element.css('top', '0px');
         }
         
-        if (left === '') {
+        if (left === '' || left === 'auto') {
           $element.css('left', '0px');
         }
       })();
