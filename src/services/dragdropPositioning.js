@@ -2,7 +2,7 @@
  * Service used to calculate draggables and droppables positions and decide
  * whether they are positioned one above the other
  */
-dragdropModule.factory('dragdropPositioning', ['positionHelper', function(positionHelper) {
+dragdropModule.factory('redDragdropPositioning', ['redDragdropPositionHelper', function(positionHelper) {
   // In the future, I want to have different strategies to determine whether a
   // draggable is positioned over a droppable, like jQuery UI Droppable does:
   // [http://api.jqueryui.com/droppable/#option-tolerance]

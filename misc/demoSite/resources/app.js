@@ -1,4 +1,4 @@
-angular.module('app', ['angular-drag-drop'])
+angular.module('app', ['red.drag-drop'])
 
 .controller('simpleDraggableCtrl', function($scope) {
   
@@ -95,7 +95,7 @@ angular.module('app', ['angular-drag-drop'])
   };
 })
 
-.controller('draggablesAndDroppablesController', function ($scope, dragdropManager) {
+.controller('draggablesAndDroppablesController', function ($scope, redDragdropManager) {
 
   var previousDay;
 
@@ -142,7 +142,7 @@ angular.module('app', ['angular-drag-drop'])
 
   $scope.dragStart = function(appointment) {
     var idx,
-      day = dragdropManager.getCurrentDroppable();
+      day = redDragdropManager.getCurrentDroppable();
       
     appointment.animateMove = false;
 
@@ -158,8 +158,8 @@ angular.module('app', ['angular-drag-drop'])
   };
 
   $scope.revert = function() {
-    var currentDay = dragdropManager.getCurrentDroppable();
-    var currentAppointment = dragdropManager.getCurrentDraggable();
+    var currentDay = redDragdropManager.getCurrentDroppable();
+    var currentAppointment = redDragdropManager.getCurrentDraggable();
 
     var isReverting = !currentDay || currentDay.indexOf(currentAppointment) >= 0;
     

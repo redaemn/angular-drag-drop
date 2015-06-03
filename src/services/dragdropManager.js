@@ -2,7 +2,7 @@
  * Service used to make draggables interact with droppables; it maintains the
  * global state of the drag-drop operation
  */
-dragdropModule.factory('dragdropManager', [function() {
+dragdropModule.factory('redDragdropManager', [function() {
   var currentDraggable,
     currentDroppable,
     registeredDroppables = [];

@@ -4,7 +4,7 @@
  * This code is taken from the AngularUI Bootstrap project [http://angular-ui.github.io/bootstrap/]
  * Copyright (c) 2012-2014 the AngularUI Team [https://github.com/angular-ui/bootstrap/blob/master/LICENSE]
  */
-dragdropModule.factory('positionHelper', ['$document', '$window', function($document, $window) {
+dragdropModule.factory('redDragdropPositionHelper', ['$document', '$window', function($document, $window) {
 
   return {
     /**

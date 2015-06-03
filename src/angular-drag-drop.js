@@ -9,4 +9,4 @@
  * - drag-drop-group to match draggables with droppables
  */
 
-var dragdropModule = angular.module('angular-drag-drop', []);
+var dragdropModule = angular.module('red.drag-drop', []);

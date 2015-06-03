@@ -1,5 +1,5 @@
 dragdropModule.directive('draggable', [
-          '$document', '$parse', 'dragdropManager',
+          '$document', '$parse', 'redDragdropManager',
   function($document,   $parse,   dragdropManager) {
     
   return {
